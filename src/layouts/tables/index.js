@@ -1,28 +1,41 @@
-// Importaciones necesarias
 import React, { useState } from "react";
 import Card from "@mui/material/Card";
-// Soft UI Dashboard React components
+import Button from "@mui/material/Button";
 import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
-// Soft UI Dashboard React examples
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import Table from "examples/Tables/Table";
-// Data
 import useUsuarioTableData from "./data/authorsTableData";
 import CustomPagination from "./CustomPagination";
+import { useNavigate } from "react-router-dom";
+import AddPatient from "./AddPatient";
 
 function Tables() {
   const { columns, rows } = useUsuarioTableData();
+  const navigate = useNavigate();
 
   const [page, setPage] = useState(1);
-  const rowsPerPage = 10; 
+  const rowsPerPage = 10;
   const totalPages = Math.ceil(rows.length / rowsPerPage);
   const displayedRows = rows.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+  const [openModal, setOpenModal] = useState(false);
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
+  };
+
+  const handleAddPatientClick = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
+
+  const handleRowClick = (patient) => {
+    console.log("Paciente seleccionado:", patient); // Verifica los datos
+    if (patient) {
+      navigate("/PatientDetails", { state: { } });
+    } else {
+      console.error("No se pasaron datos del paciente.");
+    }
   };
 
   return (
@@ -31,28 +44,62 @@ function Tables() {
       <SoftBox py={3}>
         <SoftBox mb={3}>
           <Card>
-            <SoftBox display="flex" flexDirection="column" alignItems="flex-start" p={3}>
-              <SoftTypography variant="h6">Table Leads</SoftTypography>
-              <SoftTypography
-                variant="subtitle2"
-                color="secondary"
-                fontWeight="medium"
-                mt={2}
+            <SoftBox
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              p={3}
+            >
+              <SoftTypography variant="h6">Pacientes</SoftTypography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddPatientClick}
+                sx={{
+                  padding: "8px 22px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  color: "#ffffff",
+                  fontSize: "10px",
+                  minWidth: "60px",
+                  minHeight: "30px",
+                }}
               >
-                usuario
-              </SoftTypography>
+                <span style={{ fontSize: "32px", lineHeight: "0.9" }}>+</span>
+                <span style={{ fontSize: "16px" }}>Agregar paciente</span>
+              </Button>
             </SoftBox>
+
             <SoftBox
               sx={{
-                "& .MuiTableRow-root:not(:last-child)": {
-                  "& td": {
-                    borderBottom: ({ borders: { borderWidth, borderColor } }) =>
-                      `${borderWidth[1]} solid ${borderColor}`,
+                "& .MuiTableRow-root": {
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: "#f5f5f5",
                   },
                 },
               }}
             >
-              <Table columns={columns} rows={displayedRows} />
+              <Table
+                columns={[
+                  ...columns,
+                  { name: "Acciones", align: "center" }, // Agrega una columna para acciones
+                ]}
+                rows={displayedRows.map((row) => ({
+                  ...row,
+                  Acciones: (
+                    <Button
+                      onClick={() => handleRowClick(row)}
+                      variant="text"
+                      color="primary"
+                    >
+                      Ver Detalles
+                    </Button>
+                  ),
+                }))}
+              />
+
             </SoftBox>
             <CustomPagination
               page={page}
@@ -63,6 +110,8 @@ function Tables() {
         </SoftBox>
       </SoftBox>
       <Footer />
+
+      <AddPatient open={openModal} onClose={handleCloseModal} />
     </DashboardLayout>
   );
 }

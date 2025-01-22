@@ -1,0 +1,20 @@
+/* Textarea global styles */
+.global-textarea {
+    font-family: 'Roboto', sans-serif;
+    width: 100%;
+    border-radius: 4px;
+    padding: 8px;
+    outline: none;
+    resize: none;
+    border-color: #c4c4c4;
+    color: rgb(73, 80, 87);
+}
+
+.global-textarea:focus {
+    border-color: #183A64;
+}
+
+.ancho {
+    width: 16%;
+    text-align: center;
+}
